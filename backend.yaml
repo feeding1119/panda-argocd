@@ -1,0 +1,41 @@
+# nginx-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 2  # 변경 가능: 원하는 파드 수
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: leeinhong9512/panda-backend:7ef2a5942c7d6f82ada6a9124b0f288be05ef01f
+        ports:
+        - containerPort: 8082 # Nginx가 사용하는 
+
+---
+
+# nginx-service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 8082  # 서비스에 노출되는 포트
+      targetPort: 8082  # 파드에 포워딩되는 포트
+      nodePort: 31111  # 변경 가능: 노드 포트 번호 (30000 ~ 32767 사이의 값을 선택)
+  type: NodePort  # 서비스 유형을 NodePort로 변경
+  
